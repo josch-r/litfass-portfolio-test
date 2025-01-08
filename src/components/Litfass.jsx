@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Decal, useGLTF, useTexture, Edges } from '@react-three/drei';
-import { useSpring, animated } from '@react-spring/three';
-import { useControls, folder } from 'leva';
+import React, { useState } from "react";
+import { Decal, useGLTF, useTexture, Edges } from "@react-three/drei";
+import { useSpring, animated } from "@react-spring/three";
+import { useControls, folder } from "leva";
 
 const AnimatedDecal = animated(Decal);
 
-export function Litfass({onPosterClick, onHoverChange, ...props }) {
+export function Litfass({ onPosterClick, onHoverChange, ...props }) {
   const textures = [
     useTexture("/flyers/AccessAbility.png"),
     useTexture("/flyers/project02.png"),
@@ -14,166 +14,145 @@ export function Litfass({onPosterClick, onHoverChange, ...props }) {
     useTexture("/flyers/project05.png"),
     useTexture("/flyers/project06.png"),
     useTexture("/flyers/project07.png"),
-    useTexture("/flyers/project08.png")
+    useTexture("/flyers/project08.png"),
   ];
-  const { nodes, materials } = useGLTF('/models/litfass-brick.glb');
-
-  // console.log('Nodes:', nodes);
-  // console.log('Materials:', materials);
+  const { nodes, materials } = useGLTF("/models/litfass-brick.glb");
 
   const x = 1;
   const y = 1.2;
   const z = 1;
   const fac = 1.1;
 
+  // Position and rotation controls for posters
   const controls = useControls({
-    'Poster 1': folder({
+    "Poster 1": folder({
       position1: { value: [0.0, 1, 1.0], step: 0.1 },
       rotation1: { value: [0.0, 0.0, 0.0], step: 0.1 },
     }),
-    'Poster 2': folder({
+    "Poster 2": folder({
       position2: { value: [0.9, -0.6, -0.5], step: 0.1 },
       rotation2: { value: [0.0, 2.0, 0.0], step: 0.1 },
     }),
-    'Poster 3': folder({
+    "Poster 3": folder({
       position3: { value: [-0.9, -0.6, -0.5], step: 0.1 },
       rotation3: { value: [0.0, -2.1, 0.0], step: 0.1 },
     }),
-    'Poster 4': folder({
+    "Poster 4": folder({
       position4: { value: [-0.5, -0.6, 0.8], step: 0.1 },
       rotation4: { value: [0.0, -0.7, 0.0], step: 0.1 },
     }),
-    'Poster 5': folder({
+    "Poster 5": folder({
       position5: { value: [0.7, -0.4, 0.8], step: 0.1 },
       rotation5: { value: [0.0, 0.7, 0.0], step: 0.1 },
     }),
-    'Poster 6': folder({
+    "Poster 6": folder({
       position6: { value: [0.8, 1, 0.0], step: 0.1 },
       rotation6: { value: [0.0, 1.5, 0.0], step: 0.1 },
     }),
-    'Poster 7': folder({
+    "Poster 7": folder({
       position7: { value: [0.0, 0.8, -1.0], step: 0.1 },
       rotation7: { value: [0.0, 3.1, 0.0], step: 0.1 },
     }),
-    'Poster 8': folder({
+    "Poster 8": folder({
       position8: { value: [-0.8, 0.8, 0.0], step: 0.1 },
       rotation8: { value: [0.0, -1.5, 0.0], step: 0.1 },
     }),
   });
 
-  // Create separate springs for each poster
-  const [springs, setSprings] = useState(
-    textures.map(() => 
+  const [springs] = useState(
+    textures.map(() =>
       useSpring(() => ({
         scale: [x, y, z],
         config: {
           mass: 0.1,
           friction: 10,
-        }
+        },
       }))
     )
   );
 
+  // Handle click events to notify parent
   const handleClickEvent = (index) => () => {
-    const newSprings = [...springs];
-    newSprings[index][1].start({
-      scale: [2.25, 2.475, 2.7],
+    const { position, rotation } = getPosterProperties(index);
+    onPosterClick({
+      description: `This is the detailed information for Project ${index + 1}.`,
+      position, // Pass poster position
+      rotation, // Pass poster rotation
     });
-    onPosterClick(`This is the detailed information for Project ${index + 1}.`);
-  }
+  };
 
+  // Handle hover events for visual feedback
   const handlePointerEnter = (index) => () => {
-    const newSprings = [...springs];
-    newSprings[index][1].start({
+    springs[index][1].start({
       scale: [x * fac, y * fac, z * fac],
     });
     onHoverChange(true);
-  }
+  };
 
   const handlePointerLeave = (index) => () => {
-    const newSprings = [...springs];
-    newSprings[index][1].start({
+    springs[index][1].start({
       scale: [x, y, z],
     });
     onHoverChange(false);
-  }
+  };
 
+  // Get poster properties for position and rotation
   const getPosterProperties = (index) => {
     switch (index) {
       case 0:
         return {
           position: controls.position1,
-          rotation: controls.rotation1
+          rotation: controls.rotation1,
         };
       case 1:
         return {
           position: controls.position2,
-          rotation: controls.rotation2
+          rotation: controls.rotation2,
         };
       case 2:
         return {
           position: controls.position3,
-          rotation: controls.rotation3
+          rotation: controls.rotation3,
         };
       case 3:
         return {
           position: controls.position4,
-          rotation: controls.rotation4
+          rotation: controls.rotation4,
         };
       case 4:
         return {
           position: controls.position5,
-          rotation: controls.rotation5
+          rotation: controls.rotation5,
         };
       case 5:
         return {
           position: controls.position6,
-          rotation: controls.rotation6
+          rotation: controls.rotation6,
         };
       case 6:
         return {
           position: controls.position7,
-          rotation: controls.rotation7
+          rotation: controls.rotation7,
         };
       case 7:
         return {
           position: controls.position8,
-          rotation: controls.rotation8
+          rotation: controls.rotation8,
         };
       default:
         return {
           position: [0, 0, 1],
-          rotation: [0, 0, 0]
+          rotation: [0, 0, 0],
         };
     }
-  }
+  };
 
   return (
     <group {...props} dispose={null}>
-
-      {/* <mesh 
-        geometry={nodes.Path_Straight.geometry}
-        material={materials.Stone_Dark}
-        position={[0, -2, 0]}
-        scale={2}
-        receiveShadow
+      <mesh
+        geometry={nodes.Cylinder006.geometry}
+        material={materials["Litfass_Material.001"]}
       />
-      
-      <mesh 
-        geometry={nodes.Path_Straight001.geometry}
-        material={materials.Stone_Light}
-        position={[0, -2, 0]}
-        scale={2}
-        receiveShadow
-      /> */}
-
-      <mesh 
-        geometry={nodes.Cylinder006.geometry} 
-        material={materials['Litfass_Material.001']} 
-      >
-        {/* <meshStandardMaterial transparent opacity={0.5} />
-        <Edges color="black" /> */}
-      </mesh>
       <mesh geometry={nodes.Cylinder006_1.geometry}>
         <meshBasicMaterial transparent opacity={0} />
         {textures.map((texture, index) => {
@@ -181,7 +160,6 @@ export function Litfass({onPosterClick, onHoverChange, ...props }) {
           const [spring] = springs[index];
           return (
             <AnimatedDecal
-              // debug
               key={index}
               position={position}
               rotation={rotation}
@@ -202,4 +180,5 @@ export function Litfass({onPosterClick, onHoverChange, ...props }) {
     </group>
   );
 }
-useGLTF.preload('/models/litfass-brick.glb');
+
+useGLTF.preload("/models/litfass-brick.glb");

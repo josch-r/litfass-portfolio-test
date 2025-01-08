@@ -12,7 +12,7 @@ function App() {
   const [modalContent, setModalContent] = useState('');
 
   const openModal = (content) => {
-    setModalContent(content);
+    setModalContent(content.description);
     setIsModalOpen(true);
   };
 
